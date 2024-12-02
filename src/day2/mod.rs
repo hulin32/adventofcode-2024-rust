@@ -33,25 +33,18 @@ impl Day2 {
                     nums.reverse();
                 }
 
-                let mut not_sufficient_idxs = vec![];
-                let not_sufficient: Vec<i32> = nums
+                let not_sufficient_idxs: Vec<usize> = nums
                     .windows(2)
                     .map(|w| w[0] - w[1])
                     .enumerate()
-                    .filter(|(i, cal)| {
-                        if !(1..=3).contains(cal) {
-                            not_sufficient_idxs.push(*i);
-                            true
-                        } else {
-                            false
-                        }
-                    })
-                    .map(|(_, cal)| cal)
+                    .filter(|(_, cal)| !(1..=3).contains(cal))
+                    .map(|(idx, _)| idx)
                     .collect();
 
-                if not_sufficient.is_empty() {
+                if not_sufficient_idxs.is_empty() {
                     true
                 } else {
+                    // narrow down to Unsafe indexes
                     not_sufficient_idxs
                         .iter()
                         .flat_map(|&idx| vec![idx, idx + 1])
@@ -91,6 +84,6 @@ mod tests {
 
     #[test]
     fn second_part() {
-        assert_eq!(Day2::second_part(include_str!("day2_input.txt")), 22588371);
+        assert_eq!(Day2::second_part(include_str!("day2_input.txt")), 665);
     }
 }
