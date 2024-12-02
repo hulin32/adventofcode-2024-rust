@@ -33,24 +33,38 @@ impl Day2 {
                     nums.reverse();
                 }
 
+                let mut not_sufficient_idxs = vec![];
                 let not_sufficient: Vec<i32> = nums
                     .windows(2)
                     .map(|w| w[0] - w[1])
-                    .filter(|cal| !(1..=3).contains(cal))
+                    .enumerate()
+                    .filter(|(i, cal)| {
+                        if !(1..=3).contains(cal) {
+                            not_sufficient_idxs.push(*i);
+                            true
+                        } else {
+                            false
+                        }
+                    })
+                    .map(|(_, cal)| cal)
                     .collect();
 
-                let mut res = false;
                 if not_sufficient.is_empty() {
-                    res = true
-                } else if not_sufficient.len() == 1 {
-                    res = not_sufficient.first().unwrap().abs() <= 3
-                } else if not_sufficient.len() == 2 {
-                    res = not_sufficient.iter().map(|n| n.abs()).sum::<i32>() <= 3
+                    true
                 } else {
-                    res = false
+                    not_sufficient_idxs
+                        .iter()
+                        .flat_map(|&idx| vec![idx, idx + 1])
+                        .any(|i| {
+                            let mut nums = nums.clone();
+                            nums.remove(i);
+                            nums.windows(2)
+                                .map(|w| w[0] - w[1])
+                                .filter(|cal| !(1..=3).contains(cal))
+                                .collect::<Vec<_>>()
+                                .is_empty()
+                        })
                 }
-
-                res
             })
             .count() as i32
     }
