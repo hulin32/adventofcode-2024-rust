@@ -1,7 +1,7 @@
 pub struct Day2;
 
 impl Day2 {
-    pub fn first_part(input: &str) -> i32 {
+    pub fn first_part(input: &str) -> usize {
         input
             .lines()
             .filter(|l| {
@@ -18,10 +18,10 @@ impl Day2 {
                     !(1..=3).contains(&cal)
                 })
             })
-            .count() as i32
+            .count()
     }
 
-    pub fn second_part(input: &str) -> i32 {
+    pub fn second_part(input: &str) -> usize {
         input
             .lines()
             .filter(|l| {
@@ -59,7 +59,7 @@ impl Day2 {
                         })
                 }
             })
-            .count() as i32
+            .count()
     }
 }
 
