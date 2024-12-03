@@ -1,4 +1,4 @@
-use fancy_regex::Regex;
+use regex::Regex;
 
 pub struct Day3;
 
@@ -7,26 +7,32 @@ impl Day3 {
         let pattern = r"mul\((\d+),(\d+)\)";
         let re = Regex::new(pattern).unwrap();
         re.captures_iter(input)
-            .map(|caps| {
-                let res = caps.unwrap();
-                res[1].parse::<i32>().unwrap() * res[2].parse::<i32>().unwrap()
-            })
+            .map(|caps| caps[1].parse::<i32>().unwrap() * caps[2].parse::<i32>().unwrap())
             .sum()
     }
 
     pub fn second_part(&self, input: &str) -> i32 {
-        let section_pattern = r"don't\(\)((?:(?!don't\(\)|do\(\)).)*?)do\(\)";
+        let section_pattern = r"don't\(\)|do\(\)|mul\(\d+,\s*\d+\)";
         let section_re = Regex::new(section_pattern).unwrap();
 
-        // Find all don't()...do() sections
+        // Find all don't() mul(:num1, :num2) do() sections
         let mut sum = 0;
+        let mut enabled = true;
         for section_caps in section_re.captures_iter(input) {
-            // Get the full text between don't() and do()
-            let section_text = &section_caps.unwrap()[0];
-            println!("section_text: {}", section_text);
-            sum += self.first_part(section_text);
+            let section_text = &section_caps[0];
+            if section_text == "don't()" {
+                enabled = false;
+                continue;
+            } else if section_text == "do()" {
+                enabled = true;
+                continue;
+            }
+            if enabled {
+                // calculate mul(:num1, :num2) sections with first_part fn
+                sum += self.first_part(section_text);
+            }
         }
-        self.first_part(input) - sum
+        sum
     }
 }
 
@@ -51,6 +57,6 @@ mod tests {
 
     #[test]
     fn second_part() {
-        assert_eq!(Day3.second_part(include_str!("day3_input.txt")), 665);
+        assert_eq!(Day3.second_part(include_str!("day3_input.txt")), 90772405);
     }
 }
