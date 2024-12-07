@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 
 pub struct Day6;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 enum Direction {
     Up,
     Down,
@@ -108,18 +108,12 @@ impl Day6 {
             let mut direction = Direction::Up;
             let mut current = start;
             let mut valid_obstruction = false;
-            let mut i = 0;
             while current.0 >= 0 && current.0 <= x && current.1 >= 0 && current.1 <= y {
-                if new_walks.get(&current) == Some(&direction) {
+                if new_walks.contains_key(&(current, direction.clone())) {
                     valid_obstruction = true;
                     break;
                 }
-                if i > (x * y * 4) as usize {
-                    break;
-                }
-                i += 1;
-                println!("i: {:?}: ", i);
-                new_walks.insert(current, direction.clone());
+                new_walks.insert((current, direction.clone()), true);
                 let move_step = direction.move_step();
                 let next = (current.0 + move_step.0, current.1 + move_step.1);
                 if walls.contains_key(&next) {
@@ -158,6 +152,7 @@ mod tests {
 
     #[test]
     fn second_part() {
+        // TODO slow
         assert_eq!(Day6.second_part(include_str!("day6_input.txt")), 6179);
     }
 }
