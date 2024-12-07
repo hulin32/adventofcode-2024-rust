@@ -58,10 +58,9 @@ impl Day6 {
             let mut next = (current.0 + move_step.0, current.1 + move_step.1);
             if map.contains(&next) {
                 direction = direction.next_direction();
-                move_step = direction.move_step();
-                next = (current.0 + move_step.0, current.1 + move_step.1);
+            } else {
+                current = next;
             }
-            current = next;
         }
         count.len() as i32
     }
@@ -92,13 +91,12 @@ impl Day6 {
                 walks.push(current);
             }
             let mut move_step = direction.move_step();
-            let mut next = (current.0 + move_step.0, current.1 + move_step.1);
+            let next = (current.0 + move_step.0, current.1 + move_step.1);
             if walls.get(&next).is_some() {
                 direction = direction.next_direction();
-                move_step = direction.move_step();
-                next = (current.0 + move_step.0, current.1 + move_step.1);
+            } else {
+                current = next;
             }
-            current = next;
         }
         // put obstruction from latest to oldest, loop it
         // then remove one step, walk again
@@ -106,19 +104,21 @@ impl Day6 {
         let mut count = HashSet::new();
         while let Some(change_to_wall) = walks.pop() {
             walls.insert(change_to_wall, true);
-
             let mut new_walks = HashMap::new();
             let mut direction = Direction::Up;
             let mut current = start;
             let mut valid_obstruction = false;
+            let mut i = 0;
             while current.0 >= 0 && current.0 <= x && current.1 >= 0 && current.1 <= y {
                 if new_walks.get(&current) == Some(&direction) {
                     valid_obstruction = true;
                     break;
                 }
-                if new_walks.len() > (x * y * 4) as usize {
+                if i > (x * y * 4) as usize {
                     break;
                 }
+                i += 1;
+                println!("i: {:?}: ", i);
                 new_walks.insert(current, direction.clone());
                 let move_step = direction.move_step();
                 let next = (current.0 + move_step.0, current.1 + move_step.1);
