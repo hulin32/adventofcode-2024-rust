@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn second_part() {
-        // TODO slow
+        // TODO slow 30s
         assert_eq!(Day5.second_part(include_str!("day5_input.txt")), 6179);
     }
 }
