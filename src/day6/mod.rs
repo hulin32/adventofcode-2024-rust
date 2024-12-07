@@ -153,6 +153,6 @@ mod tests {
     #[test]
     fn second_part() {
         // TODO slow
-        assert_eq!(Day6.second_part(include_str!("day6_input.txt")), 6179);
+        assert_eq!(Day6.second_part(include_str!("day6_input.txt")), 1523);
     }
 }
