@@ -1,24 +1,6 @@
 use std::collections::{HashMap, HashSet};
-use std::num::ParseIntError;
 
 pub struct Day5;
-
-#[derive(Debug)]
-pub struct DirectedGraph {
-    pub value: String,
-    pub children: HashSet<String>, // Strong references to children
-    pub parents: HashSet<String>,  // Weak references to parents
-}
-
-impl DirectedGraph {
-    pub fn new(value: String) -> Self {
-        DirectedGraph {
-            value,
-            children: HashSet::new(),
-            parents: HashSet::new(),
-        }
-    }
-}
 
 impl Day5 {
     fn calculate(
@@ -175,7 +157,7 @@ impl Day5 {
 }
 
 #[cfg(test)]
-mod tests_version1 {
+mod tests {
     use crate::day5::Day5;
 
     #[test]

@@ -1,7 +1,9 @@
+use std::cmp::PartialEq;
 use std::collections::{HashMap, HashSet};
 
 pub struct Day6;
 
+#[derive(Debug, PartialEq, Clone)]
 enum Direction {
     Up,
     Down,
@@ -64,12 +66,79 @@ impl Day6 {
         count.len() as i32
     }
     pub fn second_part(&self, input: &str) -> i32 {
-        2
+        let mut walls = HashMap::new();
+        let mut x = 0;
+        let mut y = 0;
+        let mut start = (0, 0);
+        input.lines().enumerate().for_each(|(i, l)| {
+            x = (l.len() - 1) as i32;
+            y = i as i32;
+            let s = l.split("").filter(|c| !c.is_empty()).collect::<Vec<&str>>();
+            s.iter().enumerate().for_each(|(j, c)| {
+                if c == &"#" {
+                    walls.insert((j as i32, i as i32), true);
+                }
+                if c == &"^" {
+                    start = (j as i32, i as i32);
+                }
+            });
+        });
+
+        let mut walks = vec![];
+        let mut direction = Direction::Up;
+        let mut current = start;
+        while current.0 >= 0 && current.0 <= x && current.1 >= 0 && current.1 <= y {
+            if current != start {
+                walks.push(current);
+            }
+            let mut move_step = direction.move_step();
+            let mut next = (current.0 + move_step.0, current.1 + move_step.1);
+            if walls.get(&next).is_some() {
+                direction = direction.next_direction();
+                move_step = direction.move_step();
+                next = (current.0 + move_step.0, current.1 + move_step.1);
+            }
+            current = next;
+        }
+        // put obstruction from latest to oldest, loop it
+        // then remove one step, walk again
+        // if one position is visited 4 times, then stop, its obstructed
+        let mut count = HashSet::new();
+        while let Some(change_to_wall) = walks.pop() {
+            walls.insert(change_to_wall, true);
+
+            let mut new_walks = HashMap::new();
+            let mut direction = Direction::Up;
+            let mut current = start;
+            let mut valid_obstruction = false;
+            while current.0 >= 0 && current.0 <= x && current.1 >= 0 && current.1 <= y {
+                if new_walks.get(&current) == Some(&direction) {
+                    valid_obstruction = true;
+                    break;
+                }
+                if new_walks.len() > (x * y * 4) as usize {
+                    break;
+                }
+                new_walks.insert(current, direction.clone());
+                let move_step = direction.move_step();
+                let next = (current.0 + move_step.0, current.1 + move_step.1);
+                if walls.contains_key(&next) {
+                    direction = direction.next_direction();
+                } else {
+                    current = next;
+                }
+            }
+            if valid_obstruction {
+                count.insert(change_to_wall);
+            }
+            walls.remove(&change_to_wall);
+        }
+        count.len() as i32
     }
 }
 
 #[cfg(test)]
-mod tests_version1 {
+mod tests {
     use crate::day6::Day6;
 
     #[test]
@@ -79,12 +148,12 @@ mod tests_version1 {
 
     #[test]
     fn first_part() {
-        assert_eq!(Day6.first_part(include_str!("day6_input.txt")), 4578);
+        assert_eq!(Day6.first_part(include_str!("day6_input.txt")), 5145);
     }
 
     #[test]
     fn second_part_test() {
-        assert_eq!(Day6.second_part(include_str!("day6_input_test.txt")), 123);
+        assert_eq!(Day6.second_part(include_str!("day6_input_test.txt")), 6);
     }
 
     #[test]
