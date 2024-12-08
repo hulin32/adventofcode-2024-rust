@@ -3,7 +3,8 @@ use std::collections::{HashMap, HashSet};
 pub struct Day8;
 
 impl Day8 {
-    pub fn first_part(&self, input: &str) -> i32 {
+
+    fn filter_input(&self, input: &str) -> (i32, i32, HashMap<char, Vec<(i32, i32)>>) {
         let y_max = input.lines().count() as i32;
         let x_max = input.lines().next().unwrap().len() as i32;
         let mut antennas = HashMap::new();
@@ -18,6 +19,10 @@ impl Day8 {
 
             });
         });
+        (x_max, y_max, antennas)
+    }
+    pub fn first_part(&self, input: &str) -> i32 {
+        let (x_max, y_max, antennas) = self.filter_input(input);
         let mut count = HashSet::new();
         antennas.into_iter().for_each(|(_c, ant)| {
             for i in 0..ant.len() - 1 {
@@ -41,7 +46,31 @@ impl Day8 {
     }
 
     pub fn second_part(&self, input: &str) -> i32 {
-        1
+        let (x_max, y_max, antennas) = self.filter_input(input);
+        let mut count = HashSet::new();
+        antennas.into_iter().for_each(|(_c, ant)| {
+            for i in 0..ant.len() - 1 {
+                for j in i + 1..ant.len() {
+                    let (x1, y1) = ant[i];
+                    let (x2, y2) = ant[j];
+                    let x = x2 - x1 ;
+                    let y = y2 - y1;
+                    count.insert((x1, y1));
+                    count.insert((x2, y2));
+                    let mut bottom = (x2 + x, y2 + y);
+                    while bottom.0 >= 0 && bottom.0 < x_max && bottom.1 >= 0 && bottom.1 < y_max {
+                            count.insert(bottom);
+                            bottom = (bottom.0 + x, bottom.1 + y);
+                    }
+                    let mut top = (x1 - x, y1 - y);
+                    while top.0 >= 0 && top.0 < x_max && top.1 >= 0 && top.1 < y_max {
+                        count.insert(top);
+                        top = (top.0 - x, top.1 - y);
+                    }
+                }
+            }
+        });
+        count.len() as i32
     }
 }
 
@@ -56,16 +85,16 @@ mod tests {
 
     #[test]
     fn first_part() {
-        assert_eq!(Day8.first_part(include_str!("day8_input.txt")), 1590491);
+        assert_eq!(Day8.first_part(include_str!("day8_input.txt")), 409);
     }
 
     #[test]
     fn second_part_test() {
-        assert_eq!(Day8.second_part(include_str!("day8_input_test.txt")), 31);
+        assert_eq!(Day8.second_part(include_str!("day8_input_test.txt")), 34);
     }
 
     #[test]
     fn second_part() {
-        assert_eq!(Day8.second_part(include_str!("day8_input.txt")), 22588371);
+        assert_eq!(Day8.second_part(include_str!("day8_input.txt")), 1308);
     }
 }
