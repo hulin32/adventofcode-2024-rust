@@ -9,5 +9,5 @@ mod day6;
 mod day7;
 
 fn main() {
-    Day7.first_part(include_str!("day7/day7_input_test.txt"));
+    Day7.second_part(include_str!("day7/day7_input_test.txt"));
 }

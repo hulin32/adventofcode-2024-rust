@@ -54,8 +54,8 @@ impl Day6 {
         let mut current = start;
         while current.0 >= 0 && current.0 <= x && current.1 >= 0 && current.1 <= y {
             count.insert(current);
-            let mut move_step = direction.move_step();
-            let mut next = (current.0 + move_step.0, current.1 + move_step.1);
+            let move_step = direction.move_step();
+            let next = (current.0 + move_step.0, current.1 + move_step.1);
             if map.contains(&next) {
                 direction = direction.next_direction();
             } else {
@@ -90,7 +90,7 @@ impl Day6 {
             if current != start {
                 walks.push(current);
             }
-            let mut move_step = direction.move_step();
+            let move_step = direction.move_step();
             let next = (current.0 + move_step.0, current.1 + move_step.1);
             if walls.get(&next).is_some() {
                 direction = direction.next_direction();
