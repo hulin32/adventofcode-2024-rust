@@ -1,4 +1,5 @@
 use crate::day8::Day8;
+use crate::day9::Day9;
 
 mod day1;
 mod day2;
@@ -8,7 +9,8 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 fn main() {
-    Day8.first_part(include_str!("day8/day8_input_test.txt"));
+    Day9.first_part(include_str!("day9/day9_input_test.txt"));
 }
