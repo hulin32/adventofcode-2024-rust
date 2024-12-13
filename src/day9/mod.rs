@@ -1,5 +1,3 @@
-use std::collections::{HashMap};
-
 pub struct Day9;
 
 impl Day9 {
@@ -45,7 +43,7 @@ impl Day9 {
 
     fn second_part_filter_input(&self, input: &str) -> Vec<String> {
         let mut disk = vec![];
-        let mut empty_area: HashMap<i8, Vec<usize>> = HashMap::new();
+        let mut empty_area: Vec<(usize, i8)> = vec![];
         let mut file_area: Vec<(usize, i8)> = vec![];
         let mut max_size: i8 = 0;
         input.chars().enumerate().for_each(|(i, c)| {
@@ -55,12 +53,7 @@ impl Day9 {
                 file_area.push((disk.len(), size));
             } else {
                 max_size = max_size.max(size);
-                empty_area
-                    .entry(size)
-                    .and_modify(|t| {
-                        t.push(disk.len());
-                    })
-                    .or_insert(vec![disk.len()]);
+                empty_area.push((disk.len(), size));
             }
             for _ in 0..size {
                 if i % 2 == 0 {
@@ -71,52 +64,21 @@ impl Day9 {
             }
         });
         for (i, size) in file_area.iter().rev() {
-            let mut found_size = *size;
-            loop {
-                if empty_area.contains_key(&found_size) {
+            for (empty_idx, (empty_pos, empty_size)) in empty_area.clone().iter().enumerate() {
+                if empty_pos < i && size <= empty_size {
+                    // fill empty space
+                    for j in *empty_pos..(*empty_pos + (*size as usize)) {
+                        disk[j] = disk[*i].clone().to_string();
+                    }
+                    // empty orginal space
+                    for j in *i..(*i + (*size as usize)) {
+                        disk[j] = ".".to_string();
+                    }
+                    // empty original area
+                    let left_start_idex = *empty_pos + (*size as usize);
+                    empty_area[empty_idx] = (left_start_idex, empty_size - size);
                     break;
                 }
-                if found_size > max_size {
-                    break;
-                }
-                found_size += 1;
-            }
-            if !empty_area.contains_key(&found_size) {
-                continue;
-            }
-
-            let empty_area_with_size_list = empty_area.get_mut(&found_size).unwrap();
-            let empty_area_with_size_list_idx = empty_area_with_size_list.first().unwrap();
-            if i < empty_area_with_size_list_idx {
-                continue;
-            }
-
-            // fill found empty space
-            for j in
-                *empty_area_with_size_list_idx..(*empty_area_with_size_list_idx + (*size as usize))
-            {
-                disk[j] = disk[*i].clone();
-            }
-            // empty original area
-            for j in *i..(*i + (*size as usize)) {
-                disk[j] = ".".to_string();
-            }
-            let left_start_idex = *empty_area_with_size_list_idx + (*size as usize);
-            // remove used empty_area_with_size_list
-            empty_area_with_size_list.remove(0);
-            if empty_area_with_size_list.is_empty() {
-                empty_area.remove(&found_size);
-            }
-            // update empty_aarea with left size_slot
-            if found_size > *size {
-                let left_size = found_size - size;
-                empty_area
-                    .entry(left_size)
-                    .and_modify(|t| {
-                        t.push(left_start_idex);
-                        t.sort();
-                    })
-                    .or_insert(vec![left_start_idex]);
             }
         }
         disk
