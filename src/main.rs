@@ -10,6 +10,7 @@ mod day7;
 mod day8;
 mod day9;
 mod day10;
+mod day11;
 
 fn main() {
     Day9.second_part(include_str!("day9/day9_input_test.txt"));
