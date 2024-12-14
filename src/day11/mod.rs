@@ -1,68 +1,93 @@
-pub struct Day11;
+use std::collections::HashMap;
+
+pub struct Day11 {
+    caches: HashMap<(i64, usize), i64>,
+}
 
 impl Day11 {
-    pub fn first_part(&self, input: &str, times: usize) -> i64 {
-        let mut inputs: Vec<i64> = input
+    fn count(&mut self, stone: i64, steps: usize) -> i64 {
+        if let Some(count) = self.caches.get(&(stone, steps)) {
+            return *count;
+        }
+        if steps == 0 {
+            return 1;
+        }
+        if stone == 0 {
+            let count = self.count(1, steps - 1);
+            self.caches.insert((1, steps - 1), count);
+            return count;
+        }
+        if stone.to_string().len() % 2 == 0 {
+            let mid = stone.to_string().len() / 2;
+            let count_left =
+                self.count(stone.to_string()[..mid].parse::<i64>().unwrap(), steps - 1);
+            self.caches.insert(
+                (stone.to_string()[..mid].parse::<i64>().unwrap(), steps - 1),
+                count_left,
+            );
+            let count_right =
+                self.count(stone.to_string()[mid..].parse::<i64>().unwrap(), steps - 1);
+            self.caches.insert(
+                (stone.to_string()[mid..].parse::<i64>().unwrap(), steps - 1),
+                count_right,
+            );
+            return count_left + count_right;
+        }
+        let count = self.count(stone * 2024, steps - 1);
+        self.caches.insert((stone * 2024, steps - 1), count);
+        count
+    }
+
+    pub fn first_part(&mut self, input: &str, times: usize) -> i64 {
+        let inputs: Vec<i64> = input
             .split(" ")
             .filter(|s| !s.is_empty())
             .map(|c| c.parse::<i64>().unwrap())
             .collect();
-        for _ in 0..times {
-            let mut new_inputs = vec![];
-            inputs.iter().for_each(|&x| {
-                if x == 0 {
-                    new_inputs.push(1);
-                } else if x.to_string().len() % 2 == 0 {
-                    let mid = x.to_string().len() / 2;
-                    new_inputs.push(x.to_string()[..mid].parse::<i64>().unwrap());
-                    new_inputs.push(x.to_string()[mid..].parse::<i64>().unwrap());
-                } else {
-                    new_inputs.push(x * 2024);
-                }
-            });
-            inputs = new_inputs;
-        }
-        inputs.len() as i64
-    }
+        let mut count = 0;
+        inputs.iter().for_each(|&x| {
+            count += self.count(x, times);
+        });
 
-    pub fn second_part(&self, input: &str) -> String {
-        "1".to_string()
+        count
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::day11::Day11;
+    use std::collections::HashMap;
 
     #[test]
     fn first_part_test() {
+        let mut day11 = Day11 {
+            caches: HashMap::new(),
+        };
         assert_eq!(
-            Day11.first_part(include_str!("day11_input_test.txt"), 25),
+            day11.first_part(include_str!("day11_input_test.txt"), 25),
             55312
         );
     }
 
     #[test]
     fn first_part() {
+        let mut day11 = Day11 {
+            caches: HashMap::new(),
+        };
         assert_eq!(
-            Day11.first_part(include_str!("day11_input.txt"), 25),
+            day11.first_part(include_str!("day11_input.txt"), 25),
             183620
         );
     }
 
     #[test]
-    fn second_part_test() {
-        assert_eq!(
-            Day11.second_part(include_str!("day11_input_test.txt")),
-            "1 2024 1 0 9 9 2021976"
-        );
-    }
-
-    #[test]
     fn second_part() {
+        let mut day11 = Day11 {
+            caches: HashMap::new(),
+        };
         assert_eq!(
-            Day11.second_part(include_str!("day11_input.txt")),
-            "1 2024 1 0 9 9 2021976"
+            day11.first_part(include_str!("day11_input.txt"), 75),
+            220377651399268
         );
     }
 }
