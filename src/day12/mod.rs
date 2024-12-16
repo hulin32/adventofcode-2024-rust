@@ -7,9 +7,7 @@ impl Day12 {
         inputs
             .iter()
             .map(|(c, v)| {
-                if c.to_string() == "R" {
-                    println!("{:?} {:?} {:?}", c, v.len(), v);
-                }
+                println!("{:?} {:?} {:?}", c, v.len(), v);
                 let perimeter = v
                     .iter()
                     .map(|(x, y)| {
@@ -70,9 +68,11 @@ impl Day12 {
                                 && visited.contains_key(closed_pos)
                                 && !visited.get(closed_pos).unwrap()
                             {
-                                new_inputs.push(*pos);
+                                new_inputs.push(*closed_pos);
                                 visited.insert(*closed_pos, true);
-                                area.push(*closed_pos);
+                                if !area.contains(closed_pos) {
+                                    area.push(*closed_pos);
+                                }
                             }
                         });
                     });
@@ -104,12 +104,12 @@ mod tests {
 
     #[test]
     fn first_part() {
-        assert_eq!(Day12.first_part(include_str!("day12_input.txt")), 468);
+        assert_eq!(Day12.first_part(include_str!("day12_input.txt")), 1304764);
     }
 
     #[test]
     fn second_part_test() {
-        assert_eq!(Day12.second_part(include_str!("day12_input_test.txt")), 81);
+        assert_eq!(Day12.second_part(include_str!("day12_input_test.txt")), 1206);
     }
 
     #[test]
