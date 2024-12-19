@@ -174,11 +174,11 @@ mod tests {
 
     #[test]
     fn second_part_test() {
-        assert_eq!(Day12.second_part(include_str!("day12_input_test.txt")), 368);
+        assert_eq!(Day12.second_part(include_str!("day12_input_test.txt")), 1206);
     }
 
     #[test]
     fn second_part() {
-        assert_eq!(Day12.second_part(include_str!("day12_input.txt")), 966);
+        assert_eq!(Day12.second_part(include_str!("day12_input.txt")), 811148);
     }
 }
