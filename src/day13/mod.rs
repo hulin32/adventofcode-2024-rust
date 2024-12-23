@@ -1,5 +1,5 @@
 use regex::Regex;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 
 pub struct Day13;
 
@@ -27,6 +27,7 @@ impl Day13 {
                 }
             }
         });
+        data.push(data_item.clone());
         data
     }
 
@@ -48,11 +49,11 @@ impl Day13 {
                         break;
                     }
 
-                    let tmp_b_count = left_x / bx;
+                    let tmp_b_count = left_x as f64 / *bx as f64;
 
-                    if left_y == by * tmp_b_count && tmp_b_count <= 100 {
+                    if left_y == (*by as f64 * tmp_b_count) as i64 && tmp_b_count <= 100.0 {
                         found = true;
-                        b_count = tmp_b_count;
+                        b_count = tmp_b_count as i64;
                         found_result.push(a_count * 3 + b_count);
                     }
                     a_count += 1;
@@ -82,7 +83,7 @@ mod tests {
 
     #[test]
     fn first_part() {
-        assert_eq!(Day13.first_part(include_str!("day13_input.txt")), 38457);
+        assert_eq!(Day13.first_part(include_str!("day13_input.txt")), 384157);
     }
 
     #[test]
