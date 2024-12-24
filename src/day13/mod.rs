@@ -1,5 +1,5 @@
 use regex::Regex;
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
 pub struct Day13;
 
@@ -31,8 +31,8 @@ impl Day13 {
         data
     }
 
-    fn first_part(&self, inputs: &str) -> i64 {
-        let data = self.filter_data(inputs);
+    fn first_part(&self, input: &str) -> i64 {
+        let data = self.filter_data(input);
         data.iter()
             .map(|cal| {
                 let (ax, ay) = cal.get(&'A').unwrap();
@@ -68,7 +68,23 @@ impl Day13 {
     }
 
     pub fn second_part(&self, input: &str) -> i64 {
-        1
+        let data = self.filter_data(input);
+        data.iter()
+            .map(|cal| {
+                let (ax, ay) = cal.get(&'A').unwrap();
+                let (bx, by) = cal.get(&'B').unwrap();
+                let (rx, ry) = cal.get(&'R').unwrap();
+                let rx = rx + 10000000000000;
+                let ry = ry + 10000000000000;
+                let a_count = (rx * by - ry * bx) as f64 / (ax * by - ay * bx) as f64;
+                let b_count = (rx as f64 - *ax as f64 * a_count) / (*bx as f64);
+                if a_count % 1.0 == 0.0 && b_count % 1.0 == 0.0 {
+                    (a_count * 3.0 + b_count) as i64
+                } else {
+                    0
+                }
+            })
+            .sum()
     }
 }
 
@@ -83,19 +99,22 @@ mod tests {
 
     #[test]
     fn first_part() {
-        assert_eq!(Day13.first_part(include_str!("day13_input.txt")), 384157);
+        assert_eq!(Day13.first_part(include_str!("day13_input.txt")), 38714);
     }
 
     #[test]
     fn second_part_test() {
         assert_eq!(
             Day13.second_part(include_str!("day13_input_test.txt")),
-            1206
+            875318608908
         );
     }
 
     #[test]
     fn second_part() {
-        assert_eq!(Day13.second_part(include_str!("day13_input.txt")), 811148);
+        assert_eq!(
+            Day13.second_part(include_str!("day13_input.txt")),
+            74015623345775
+        );
     }
 }
